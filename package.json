@@ -1,0 +1,32 @@
+{
+  "name": "angular-dropzone",
+  "version": "0.0.1",
+  "description": "Client side angularjs directive for dropzone",
+  "main": "Gulpfile.js",
+  "dependencies": {
+    "gulp": "~3.6.0"
+    , "gulp-coffee": "1.4.1"
+    , "gulp-concat": "2.2.0"
+    , "gulp-uglify": "0.2.1"
+    , "gulp-imagemin": "0.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Igosuki/angular-dropzone.git"
+  },
+  "keywords": [
+    "angularjs",
+    "dropzone",
+    "directive"
+  ],
+  "author": "Guillaume Balaine <igosuki@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Igosuki/angular-dropzone/issues"
+  },
+  "homepage": "https://github.com/Igosuki/angular-dropzone"
+}

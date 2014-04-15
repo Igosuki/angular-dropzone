@@ -1,0 +1,23 @@
+{
+  "name": "angular-dropzone",
+  "version": "0.0.1",
+  "authors": [
+    "Guillaume <igosuki@gmail.com>"
+  ],
+  "description": "A wrapper around Dropzone.js, mapping api and events to ng directive",
+  "main": "dist/angular-dropzone.js",
+  "keywords": [
+    "angular",
+    "dropzone",
+    "directive"
+  ],
+  "license": "MIT",
+  "homepage": "http://github.com/Igosuki/dropzone.git",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
