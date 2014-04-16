@@ -8,7 +8,7 @@
     "dropzone": "~3.8.4"
   },
   "description": "A wrapper around Dropzone.js, mapping api and events to ng directive",
-  "main": "dist/angular-dropzone.js",
+  "main": "./dist/angular-dropzone.js",
   "keywords": [
     "angular",
     "dropzone",

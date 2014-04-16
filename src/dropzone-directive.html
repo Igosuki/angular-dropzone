@@ -1,0 +1,9 @@
+<div class="alert alert-danger " ng-show="dropzoneAlerts">
+    <div class="dropzone" ng-transclude></div>
+    <h4>Dropzone Alerts</h4>
+    <ul ng-repeat="alert in dropzoneAlerts">
+      <li ng-bind="alert"></li>
+    </ul>
+</div>
+
+

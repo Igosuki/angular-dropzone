@@ -9,6 +9,9 @@
     , "gulp-concat": "2.2.0"
     , "gulp-uglify": "0.2.1"
     , "gulp-imagemin": "0.2.0"
+    , "gulp-html2js": "0.1.0"
+    , "gulp-clean": "0.2.4"
+    , "gulp-notify": "1.2.5"
   },
   "devDependencies": {},
   "scripts": {
