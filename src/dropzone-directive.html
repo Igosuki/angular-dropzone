@@ -1,9 +1,22 @@
-<div class="alert alert-danger " ng-show="dropzoneAlerts">
-    <div class="dropzone" ng-transclude></div>
-    <h4>Dropzone Alerts</h4>
-    <ul ng-repeat="alert in dropzoneAlerts">
-      <li ng-bind="alert"></li>
-    </ul>
+<div class="dropzone-container">
+  <div ng-show="dropzoneAlerts.length > 0">
+    <div class="alert alert-{{alert.type}}" ng-repeat="alert in dropzoneAlerts">
+      <ul>
+        <li>
+          <span ng-bind="alert.msg|limitTo:80"></span>
+        </li>
+      </ul>
+      <a class="close" ng-href="javascript:void(0)" ng-click="dropzoneAlerts.splice($index, 1)" >
+        <i class="fa fa-times"></i>
+      </a>
+    </div>
+  </div>
+  <div class="dropzone">
+    <div class="dropzone-inner" ng-transclude>
+    </div>
+    <div class="dropzone-preview">
+    </div>
+  </div>
 </div>
 
 

@@ -41,7 +41,7 @@ gulp.task('coffee', function () {
 gulp.task('templates', function() {
  return gulp.src(paths.templates)
     .pipe(html2js({
-      outputModuleName: 'ng_dropzone.html',
+      outputModuleName: 'angular-dropzone-tpls',
       useStrict: true
     }))
     .pipe(concat('angular-dropzone-templates.js'))
