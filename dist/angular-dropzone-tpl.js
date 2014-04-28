@@ -81,7 +81,7 @@ app.run(["$templateCache", function($templateCache) {
   this.dropzoneModule = angular.module('angular-dropzone');
 
   this.dropzoneModule.directive('ngDropzone', [
-    '$q', '$parse', '$http', function($q, $parse, $http) {
+    '$q', '$parse', '$http', '$timeout', function($q, $parse, $http, $timeout) {
       var dropzoneDefinition;
       Dropzone.autoDiscover = false;
       dropzoneDefinition = {
@@ -128,38 +128,41 @@ app.run(["$templateCache", function($templateCache) {
             return scope.dzParamNamePromise = $q.defer();
           },
           post: function(scope, element, attrs, ctrl) {
-            var dropzone, dzOptions, url;
+            var url;
             url = element.tagName === 'form' ? element.attrs('url') : attrs['dzUrl'];
-            dzOptions = {
-              paramName: attrs.dzField || scope.dzField.attr('name'),
-              acceptedFiles: '.jpeg, .jpg, .png, .doc, .xls, .pdf, .odt',
-              previewsContainer: scope.dzPreviewZone,
-              autoProcessQueue: true,
-              url: url,
-              clickable: true,
-              withCredentials: true,
-              headers: $http.defaults.headers.common
-            };
-            if (attrs.dzOptions) {
-              dzOptions = angular.extend(dzOptions, $parse(attrs.dzOptions)(scope));
-            }
-            dropzone = new Dropzone(element[0], dzOptions);
-            dropzone.on("success", function(file, response) {
-              if (scope.dzSuccess) {
-                scope.dzSuccess(response);
+            return $timeout(function() {
+              var dropzone, dzOptions;
+              dzOptions = {
+                paramName: attrs.dzField || scope.dzField.attr('name'),
+                acceptedFiles: '.jpeg, .jpg, .png, .doc, .xls, .pdf, .odt',
+                previewsContainer: scope.dzPreviewZone,
+                autoProcessQueue: true,
+                url: url,
+                clickable: true,
+                withCredentials: true,
+                headers: $http.defaults.headers.common
+              };
+              if (attrs.dzOptions) {
+                dzOptions = angular.extend(dzOptions, $parse(attrs.dzOptions)(scope));
               }
-              if (!attrs.dzBatch || dropzone.getUploadingFiles().length === 0) {
-                return ctrl.addSuccess(attrs.dzSuccessMsg || "All files sent !");
-              }
-            });
-            return dropzone.on("error", function(file) {
-              if (file.xhr.response.messages) {
-                return angular.forEach(file.xhr.response.messages, function(k, v) {
-                  return ctrl.addError(k + " : " + angular.toJson(v));
-                });
-              } else {
-                return ctrl.addError("Problem sending " + angular.toJson(file.xhr.response));
-              }
+              dropzone = new Dropzone(element[0], dzOptions);
+              dropzone.on("success", function(file, response) {
+                if (scope.dzSuccess) {
+                  scope.dzSuccess(response);
+                }
+                if (!attrs.dzBatch || dropzone.getUploadingFiles().length === 0) {
+                  return ctrl.addSuccess(attrs.dzSuccessMsg || "All files sent !");
+                }
+              });
+              return dropzone.on("error", function(file) {
+                if (file.xhr.response.messages) {
+                  return angular.forEach(file.xhr.response.messages, function(k, v) {
+                    return ctrl.addError(k + " : " + angular.toJson(v));
+                  });
+                } else {
+                  return ctrl.addError("Problem sending " + angular.toJson(file.xhr.response));
+                }
+              }, 0);
             });
           }
         }
