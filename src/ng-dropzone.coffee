@@ -24,7 +24,7 @@
     replace: true
     transclude: true
     scope:
-      dzSuccess: '='
+      dzSuccess: '&'
     link:
       pre: (scope, element, attrs, ctrl) ->
         scope.dzParamNamePromise = $q.defer()
@@ -45,8 +45,9 @@
             dzOptions = angular.extend(dzOptions, $parse(attrs.dzOptions)(scope))
           dropzone = new Dropzone element[0], dzOptions
           dropzone.on "success", (file, response) ->
-            if scope.dzSuccess
-              scope.dzSuccess(response)
+            successCb = scope.dzSuccess()
+            if angular.isFunction(successCb)
+              successCb(response)
             if !attrs.dzBatch or dropzone.getUploadingFiles().length is 0
               ctrl.addSuccess(attrs.dzSuccessMsg or "All files sent !")
           dropzone.on "error", (file) ->

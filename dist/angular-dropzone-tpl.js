@@ -121,7 +121,7 @@ app.run(["$templateCache", function($templateCache) {
         replace: true,
         transclude: true,
         scope: {
-          dzSuccess: '='
+          dzSuccess: '&'
         },
         link: {
           pre: function(scope, element, attrs, ctrl) {
@@ -147,8 +147,10 @@ app.run(["$templateCache", function($templateCache) {
               }
               dropzone = new Dropzone(element[0], dzOptions);
               dropzone.on("success", function(file, response) {
-                if (scope.dzSuccess) {
-                  scope.dzSuccess(response);
+                var successCb;
+                successCb = scope.dzSuccess();
+                if (angular.isFunction(successCb)) {
+                  successCb(response);
                 }
                 if (!attrs.dzBatch || dropzone.getUploadingFiles().length === 0) {
                   return ctrl.addSuccess(attrs.dzSuccessMsg || "All files sent !");
