@@ -48,8 +48,9 @@
             successCb = scope.dzSuccess()
             if angular.isFunction(successCb)
               successCb(response)
-            if !attrs.dzBatch or dropzone.getUploadingFiles().length is 0
-              ctrl.addSuccess(attrs.dzSuccessMsg or "All files sent !")
+            # if !attrs.dzBatch or dropzone.getUploadingFiles().length is 0
+              # ctrl.addSuccess(attrs.dzSuccessMsg or "All files sent !")
+            return
           dropzone.on "error", (file) ->
             if file.xhr.response.messages
               angular.forEach file.xhr.response.messages, (k, v) ->

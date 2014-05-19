@@ -152,9 +152,6 @@ app.run(["$templateCache", function($templateCache) {
                 if (angular.isFunction(successCb)) {
                   successCb(response);
                 }
-                if (!attrs.dzBatch || dropzone.getUploadingFiles().length === 0) {
-                  return ctrl.addSuccess(attrs.dzSuccessMsg || "All files sent !");
-                }
               });
               return dropzone.on("error", function(file) {
                 if (file.xhr.response.messages) {
