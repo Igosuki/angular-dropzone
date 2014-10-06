@@ -1,23 +1,69 @@
 @dropzoneModule = angular.module 'angular-dropzone'
-@dropzoneModule.directive 'ngDropzone', ['$q', '$parse','$http', '$timeout', ($q, $parse, $http, $timeout) ->
-  Dropzone.autoDiscover = false
+@dropzoneModule.constant 'dropzoneConfig', {
+  acceptedFiles: '.jpeg, .jpg, .png, .doc, .xls, .pdf, .odt'
+  autoDiscover: false
+  autoProcessQueue: true
+  parallelUploads: 1
+  clickable: true
+}
+@dropzoneModule.directive 'ngDropzone', ['$q', '$parse','$upload', '$timeout', '$compile', '$templateCache', 'dropzoneConfig',
+($q, $parse, $upload, $timeout, $compile, $templateCache, dropzoneConfig) ->
+  STATUS = {
+    UPLOADING: "uploading"
+    PENDING: "pending"
+    CANCELED: "canceled"
+  }
   dropzoneDefinition =
-    controller: ['$scope', ($scope) ->
+    controller: ($scope) ->
       $scope.dropzoneAlerts ||= []
+      $scope.files = []
+      uploadingCount = 0
+      self = @
+      processQueue = () =>
+        if self.config.autoProcessQueue
+          $timeout () ->
+            return if $scope.files.length is 0
+            angular.forEach $scope.files, (file) ->
+              if file.status isnt STATUS.UPLOADING && uploadingCount < self.config.parallelUploads
+                file.query = uploadFile(file)
+                uploadingCount++
+            processQueue() if $scope.files.length > uploadingCount
+          , 100
+      uploadFile = (file) ->
+        $upload.upload(
+          method: 'POST'
+          url: self.url
+          file: file
+          fileFormDataName: self.paramName
+        ).progress((evt) ->
+          file.uploadProgress = parseInt(100.0 * evt.loaded / evt.total)
+        ).success((data, headers) ->
+          self.cancelFile(file)
+          $scope.dzSuccess()(data)
+        ).error (response) ->
+          if response.messages
+            angular.forEach response.messages, (k, v) ->
+              addError(k + " : " + angular.toJson(v))
+          else
+            addError("Problem sending " + angular.toJson(response))
+
+      addError = (alertMsg) ->
+        $scope.dropzoneAlerts.push({type: 'danger', msg: alertMsg})
+
+      @.queue = (files) ->
+        angular.forEach files, (file) ->
+          $scope.files.push file
+          return
+        processQueue()
       @.setField = (fieldElement) ->
-        $scope.dzField = fieldElement
-        $scope.paramName = fieldElement.attr('name')
-      @.setPreviewZone = (zone) ->
-        $scope.dzPreviewZone = zone
-      @.addError = (alertMessage) ->
-        $scope.$apply () ->
-          $scope.dropzoneAlerts.push({type: 'danger', msg: alertMessage})
+        @paramName = fieldElement.attr('name')
       @.addSuccess = (alertMessage) ->
         $scope.$apply () ->
           $scope.dropzoneAlerts.push({type: 'success', msg: alertMessage})
-
+      @.cancelFile = (file) ->
+        uploadingCount--
+        $scope.files.splice $scope.files.indexOf(file), 1
       return @
-    ]
     restrict: 'EC'
     templateUrl: (element, attributes) ->
       attributes.template || "src/dropzone-directive.html"
@@ -25,38 +71,45 @@
     transclude: true
     scope:
       dzSuccess: '&'
+      dzConfig: '@'
     link:
       pre: (scope, element, attrs, ctrl) ->
         scope.dzParamNamePromise = $q.defer()
       post: (scope, element, attrs, ctrl) ->
+        hiddenInput = undefined
 
-        url = if element.tagName is 'form' then element.attrs('url') else attrs['dzUrl']
-        $timeout () ->
-          dzOptions =
-            paramName: attrs.dzField || scope.dzField.attr('name')
-            acceptedFiles: '.jpeg, .jpg, .png, .doc, .xls, .pdf, .odt'
-            previewsContainer: scope.dzPreviewZone
-            autoProcessQueue: true
-            url: url
-            clickable: true
-            withCredentials: true
-            headers: $http.defaults.headers.common
-          if attrs.dzOptions
-            dzOptions = angular.extend(dzOptions, $parse(attrs.dzOptions)(scope))
-          dropzone = new Dropzone element[0], dzOptions
-          dropzone.on "success", (file, response) ->
-            successCb = scope.dzSuccess()
-            if angular.isFunction(successCb)
-              successCb(response)
-            # if !attrs.dzBatch or dropzone.getUploadingFiles().length is 0
-              # ctrl.addSuccess(attrs.dzSuccessMsg or "All files sent !")
-            return
-          dropzone.on "error", (file) ->
-            if file.xhr.response.messages
-              angular.forEach file.xhr.response.messages, (k, v) ->
-                ctrl.addError(k + " : " + angular.toJson(v))
-            else
-              ctrl.addError("Problem sending " + angular.toJson(file.xhr.response))
-          , 0
+        ctrl.config = config = angular.extend dropzoneConfig, $parse(attrs.dzConfig)(scope)
+
+        ctrl.url = if element.tagName is 'form' then element.attrs('url') else attrs['dzUrl']
+
+        redirectClick = (evt) ->
+          evt.stopPropagation()
+          hiddenInput[0].dispatchEvent(new Event('click'))
+
+        if config.clickable
+          createHiddenField = () ->
+            hiddenInput.remove() if hiddenInput
+            hiddenInput = angular.element $compile($templateCache.get('src/dropzone-file-input.html'))(scope)
+            element.append(hiddenInput)
+            hiddenInput.bind 'change', () ->
+              ctrl.queue hiddenInput[0].files
+              createHiddenField()
+          createHiddenField()
+          if angular.isString config.clickable
+            element.querySelectorAll(config.clickable).bind 'click', (evt) ->
+              redirectClick(evt)
+          else
+            element.bind 'click', (evt) ->
+              redirectClick(evt)
+
+        element.bind 'dragover dragenter', () ->
+          element.addClass 'active'
+        element.bind 'dragend dragleave', () ->
+          element.removeClass 'active'
+
+        element.bind 'drop', () ->
+          dropEvent.stopPropagation();
+          dropEvent.preventDefault();
+          ctrl.queue dropEvent.originalEvent.dataTransfer.files
   return dropzoneDefinition
 ]

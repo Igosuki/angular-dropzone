@@ -1,0 +1,19 @@
+<div id="template" class="file-row">
+  <div>
+      <p class="name" ng-bind=""></p>
+      <strong class="error text-danger" ng-bind="dzFile.errors"></strong>
+  </div>
+  <div>
+    <progressbar class="progress-striped active text-center" value="file.uploadProgress" type="{{success}}">
+      <span class="strong" ng-bind="dzFile.name"></span>
+      <span class="strong"> : </span>
+      <span class="strong" ng-bind="dzFile.size|bytes:'MB'"></span>
+    </progressbar>
+    <a class="javascript:void(0)" ng-click="remove()" class="text-warning cancel">
+        <i class="fa fa-ban fa-1-5x"></i>
+    </a>
+    <a class="javascript:void(0)" ng-click="remove()" class="text-danger delete">
+      <i class="fa fa-trash-o fa-1-5x"></i>
+    </a>
+  </div>
+</div>

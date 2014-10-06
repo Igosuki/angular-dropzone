@@ -4,8 +4,8 @@
   "authors": [
     "Guillaume <igosuki@gmail.com>"
   ],
-  "dependencies" : {
-    "dropzone": "~3.8.4"
+  "dependencies": {
+    "ng-file-upload": "latest"
   },
   "description": "A wrapper around Dropzone.js, mapping api and events to ng directive",
   "main": "./dist/angular-dropzone.js",
