@@ -80,6 +80,27 @@ app.run(["$templateCache", function($templateCache) {
 (function() {
   this.dropzoneModule = angular.module('angular-dropzone');
 
+  this.dropzoneModule.directive('dzDataField', [
+    '$http', function($http) {
+      var dzDataFieldDefinition;
+      dzDataFieldDefinition = {
+        restrict: 'AE',
+        require: '^ngDropzone',
+        link: {
+          post: function(scope, element, attrs, ngDropzone) {
+            return ngDropzone.setDataField(element);
+          }
+        }
+      };
+      return dzDataFieldDefinition;
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  this.dropzoneModule = angular.module('angular-dropzone');
+
   this.dropzoneModule.directive('dzField', [
     '$http', function($http) {
       var dzFieldDefinition;
@@ -175,7 +196,8 @@ app.run(["$templateCache", function($templateCache) {
               method: 'POST',
               url: self.url,
               file: file,
-              fileFormDataName: self.paramName
+              fileFormDataName: self.paramName,
+              data: self.params
             }).progress(function(evt) {
               return file.uploadProgress = parseInt(100.0 * evt.loaded / evt.total);
             }).success(function(data, headers) {
@@ -202,6 +224,10 @@ app.run(["$templateCache", function($templateCache) {
               $scope.files.push(file);
             });
             return processQueue();
+          };
+          this.params = {};
+          this.setDataField = function(fieldElement) {
+            return this.params[fieldElement.attr('name')] = fieldElement.val();
           };
           this.setField = function(fieldElement) {
             return this.paramName = fieldElement.attr('name');

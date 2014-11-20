@@ -4,14 +4,14 @@
   "description": "Client side angularjs directive for dropzone",
   "main": "Gulpfile.js",
   "dependencies": {
-    "gulp": "~3.6.0"
+    "gulp": "~3.8.0"
     , "gulp-coffee": "1.4.1"
     , "gulp-concat": "2.2.0"
     , "gulp-uglify": "0.2.1"
     , "gulp-imagemin": "0.2.0"
     , "gulp-html2js": "0.1.0"
     , "gulp-clean": "0.2.4"
-    , "gulp-notify": "1.2.5"
+    , "gulp-notify": "2.0.1"
   },
   "devDependencies": {},
   "scripts": {

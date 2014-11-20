@@ -35,6 +35,7 @@
           url: self.url
           file: file
           fileFormDataName: self.paramName
+          data: self.params
         ).progress((evt) ->
           file.uploadProgress = parseInt(100.0 * evt.loaded / evt.total)
         ).success((data, headers) ->
@@ -55,6 +56,9 @@
           $scope.files.push file
           return
         processQueue()
+      @params =  {}
+      @.setDataField = (fieldElement) ->
+        @params[fieldElement.attr('name')] = fieldElement.val()
       @.setField = (fieldElement) ->
         @paramName = fieldElement.attr('name')
       @.addSuccess = (alertMessage) ->
