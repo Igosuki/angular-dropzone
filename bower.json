@@ -7,6 +7,8 @@
   "dependencies": {
     "ng-file-upload": "latest"
   },
+  "devDependencies": {
+  },
   "description": "A wrapper around Dropzone.js, mapping api and events to ng directive",
   "main": "./dist/angular-dropzone.js",
   "keywords": [

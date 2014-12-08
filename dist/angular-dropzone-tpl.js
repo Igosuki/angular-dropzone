@@ -267,7 +267,7 @@ app.run(["$templateCache", function($templateCache) {
             ctrl.url = element.tagName === 'form' ? element.attrs('url') : attrs['dzUrl'];
             redirectClick = function(evt) {
               evt.stopPropagation();
-              return hiddenInput[0].dispatchEvent(new Event('click'));
+              return hiddenInput[0].dispatchEvent(new MouseEvent('click'));
             };
             if (config.clickable) {
               createHiddenField = function() {

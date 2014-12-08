@@ -88,7 +88,7 @@
 
         redirectClick = (evt) ->
           evt.stopPropagation()
-          hiddenInput[0].dispatchEvent(new Event('click'))
+          hiddenInput[0].dispatchEvent(new MouseEvent('click'))
 
         if config.clickable
           createHiddenField = () ->

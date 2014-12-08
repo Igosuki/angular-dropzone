@@ -7,6 +7,7 @@ var imagemin = require('gulp-imagemin');
 var html2js = require('gulp-html2js');
 var clean = require('gulp-clean');
 var notify = require('gulp-notify');
+var protractor = require("gulp-protractor").protractor;
 
 var paths = {
   coffee: ['src/**/*.coffee'],
@@ -15,7 +16,8 @@ var paths = {
   styles: 'src/**/*.scss',
   templates: 'src/**/*.html',
   dist: 'dist',
-  tmp: 'tmp'
+  tmp: 'tmp',
+  test: ['test/*.js']
 };
 var finalName = 'angular-dropzone-tpl';
 
@@ -60,6 +62,15 @@ gulp.task('images', function() {
     .pipe(gulp.dest('dist/img'));
 });
 
+gulp.task('test', function () {
+  return gulp.src(paths.test)
+    .pipe(protractor({
+        configFile: "test/protractor.config.js",
+        args: ['--baseUrl', 'http://127.0.0.1:8000']
+    }))
+    .on('error', function(e) { throw e })
+});
+
 // Rerun the task when a file changes
 gulp.task('watch', function() {
   gulp.start('clean');
@@ -72,3 +83,5 @@ gulp.task('watch', function() {
 gulp.task('default', ['clean', 'build']);
 // The default task (called when you run `gulp` from cli)
 gulp.task('build', ['scripts', 'images']);
+
+
