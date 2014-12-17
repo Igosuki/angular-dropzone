@@ -157,7 +157,7 @@ app.run(["$templateCache", function($templateCache) {
   });
 
   this.dropzoneModule.directive('ngDropzone', [
-    '$q', '$parse', '$upload', '$timeout', '$compile', '$templateCache', 'dropzoneConfig', function($q, $parse, $upload, $timeout, $compile, $templateCache, dropzoneConfig) {
+    '$q', '$parse', '$upload', '$timeout', '$compile', '$templateCache', 'dropzoneConfig', '$document', function($q, $parse, $upload, $timeout, $compile, $templateCache, dropzoneConfig, $document) {
       var STATUS, dropzoneDefinition;
       STATUS = {
         UPLOADING: "uploading",
@@ -266,8 +266,11 @@ app.run(["$templateCache", function($templateCache) {
             ctrl.config = config = angular.extend(dropzoneConfig, $parse(attrs.dzConfig)(scope));
             ctrl.url = element.tagName === 'form' ? element.attrs('url') : attrs['dzUrl'];
             redirectClick = function(evt) {
+              var e;
               evt.stopPropagation();
-              return hiddenInput[0].dispatchEvent(new MouseEvent('click'));
+              e = $document[0].createEvent("MouseEvents");
+              e.initEvent('click', true, true);
+              return hiddenInput[0].dispatchEvent(e);
             };
             if (config.clickable) {
               createHiddenField = function() {

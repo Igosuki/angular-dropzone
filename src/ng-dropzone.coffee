@@ -6,8 +6,8 @@
   parallelUploads: 1
   clickable: true
 }
-@dropzoneModule.directive 'ngDropzone', ['$q', '$parse','$upload', '$timeout', '$compile', '$templateCache', 'dropzoneConfig',
-($q, $parse, $upload, $timeout, $compile, $templateCache, dropzoneConfig) ->
+@dropzoneModule.directive 'ngDropzone', ['$q', '$parse','$upload', '$timeout', '$compile', '$templateCache', 'dropzoneConfig', '$document',
+($q, $parse, $upload, $timeout, $compile, $templateCache, dropzoneConfig, $document) ->
   STATUS = {
     UPLOADING: "uploading"
     PENDING: "pending"
@@ -88,7 +88,9 @@
 
         redirectClick = (evt) ->
           evt.stopPropagation()
-          hiddenInput[0].dispatchEvent(new MouseEvent('click'))
+          e = $document[0].createEvent("MouseEvents")
+          e.initEvent('click', true, true)
+          hiddenInput[0].dispatchEvent(e)
 
         if config.clickable
           createHiddenField = () ->
