@@ -9,7 +9,7 @@ app.run(["$templateCache", function($templateCache) {
     "    <div class=\"alert alert-{{alert.type}}\" ng-repeat=\"alert in dropzoneAlerts\">\n" +
     "      <ul>\n" +
     "        <li>\n" +
-    "          <span ng-bind=\"alert.msg|limitTo:80\"></span>\n" +
+    "          <span ng-bind=\"alert.msg|limitTo:200\"></span>\n" +
     "        </li>\n" +
     "      </ul>\n" +
     "      <a class=\"close\" ng-href=\"javascript:void(0)\" ng-click=\"dropzoneAlerts.splice($index, 1)\" >\n" +
@@ -201,16 +201,26 @@ app.run(["$templateCache", function($templateCache) {
             }).progress(function(evt) {
               return file.uploadProgress = parseInt(100.0 * evt.loaded / evt.total);
             }).success(function(data, headers) {
-              self.cancelFile(file);
               return $scope.dzSuccess()(data);
             }).error(function(response) {
-              if (response.messages) {
-                return angular.forEach(response.messages, function(k, v) {
-                  return addError(k + " : " + angular.toJson(v));
-                });
+              var errorFn;
+              if ((errorFn = $scope.dzError())) {
+                return errorFn(response, $scope.dropzoneAlerts);
               } else {
-                return addError("Problem sending " + angular.toJson(response));
+                if (angular.isArray(response)) {
+                  return angular.forEach(response, function(message) {
+                    return addError(message);
+                  });
+                } else if (angular.isObject(response)) {
+                  return angular.forEach(response, function(value, key) {
+                    var valueString;
+                    valueString = angular.isArray(value) ? value.join(", ") : value;
+                    return addError("" + key + " : " + valueString);
+                  });
+                }
               }
+            })["finally"](function() {
+              return self.cancelFile(file);
             });
           };
           addError = function(alertMsg) {
@@ -254,6 +264,7 @@ app.run(["$templateCache", function($templateCache) {
         transclude: true,
         scope: {
           dzSuccess: '&',
+          dzError: '&',
           dzConfig: '@'
         },
         link: {

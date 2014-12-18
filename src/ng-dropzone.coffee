@@ -39,14 +39,20 @@
         ).progress((evt) ->
           file.uploadProgress = parseInt(100.0 * evt.loaded / evt.total)
         ).success((data, headers) ->
-          self.cancelFile(file)
           $scope.dzSuccess()(data)
-        ).error (response) ->
-          if response.messages
-            angular.forEach response.messages, (k, v) ->
-              addError(k + " : " + angular.toJson(v))
+        ).error((response) ->
+          if (errorFn = $scope.dzError())
+            errorFn(response, $scope.dropzoneAlerts)
           else
-            addError("Problem sending " + angular.toJson(response))
+            if angular.isArray(response)
+              angular.forEach response, (message) ->
+                addError(message)
+            else if angular.isObject(response)
+              angular.forEach response, (value, key) ->
+                valueString = if angular.isArray(value) then value.join(", ") else value
+                addError("#{key} : #{valueString}")
+        ).finally () ->
+          self.cancelFile(file)
 
       addError = (alertMsg) ->
         $scope.dropzoneAlerts.push({type: 'danger', msg: alertMsg})
@@ -75,6 +81,7 @@
     transclude: true
     scope:
       dzSuccess: '&'
+      dzError: '&'
       dzConfig: '@'
     link:
       pre: (scope, element, attrs, ctrl) ->

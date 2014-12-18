@@ -3,7 +3,7 @@
     <div class="alert alert-{{alert.type}}" ng-repeat="alert in dropzoneAlerts">
       <ul>
         <li>
-          <span ng-bind="alert.msg|limitTo:80"></span>
+          <span ng-bind="alert.msg|limitTo:200"></span>
         </li>
       </ul>
       <a class="close" ng-href="javascript:void(0)" ng-click="dropzoneAlerts.splice($index, 1)" >
